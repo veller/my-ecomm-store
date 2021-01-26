@@ -1,10 +1,11 @@
 import Head from 'next/head'
+import Link from 'next/link'
 import styles from '../styles/Home.module.css'
 import products from '../products.json'
-import { initiateCheckout } from '../lib/payments'
+import { useCart } from '../hooks/use-cart'
 
 export default function Home() {
-  console.log('NEXT_PUBLIC_STRIPE_API_KEY', process.env.NEXT_PUBLIC_STRIPE_API_KEY)
+  let { addToCart } = useCart()
 
   return (
     <div className={styles.container}>
@@ -14,9 +15,6 @@ export default function Home() {
       </Head>
 
       <main className={styles.main}>
-        <h1 className={styles.title}>
-          Space Jelly Shop
-        </h1>
 
         <p className={styles.description}>
           The best space jellyfish swag in the universe!
@@ -27,28 +25,22 @@ export default function Home() {
             const {id, title, price, image, description} = product
             return (
               <li key={id} className={styles.card}>
-                <a href="https://nextjs.org/docs">
-                  <img src={image} alt={title}/>
-                  <h3>{title}</h3>
-                  <p>R${price}</p>
-                  <p>{description}</p>
-                </a>
+                <Link href={`/products/${id}`}>
+                  <a>
+                    <img src={image} alt={title}/>
+                    <h3>{title}</h3>
+                    <p>R${price}</p>
+                    <p>{description}</p>
+                  </a>
+                </Link>
                 <p>
-                  <button className={styles.button} onClick={() => {
-                    initiateCheckout({
-                      lineItems: [
-                        {
-                          price: id,
-                          quantity: 1
-                        }
-                      ]
-                    })
-                  }}>Buy Now</button>
+                  <button className={styles.button} onClick={() => { addToCart({id})}}>Add to cart</button>
                 </p>
               </li>
             )
           })}          
         </ul>
+
       </main>
 
       <footer className={styles.footer}>
